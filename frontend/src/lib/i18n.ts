@@ -1,0 +1,32 @@
+import type { Language } from './types';
+export const labels = {
+  home: ['Home', 'होम'], cases: ['My cases', 'मेरे मामले'], newCase: ['Start a case', 'मामला शुरू करें'],
+  sample: ['Explore a sample', 'उदाहरण देखें'], overview: ['Overview', 'सारांश'], documents: ['Documents', 'दस्तावेज़'],
+  conversation: ['Ask Eagle Eye', 'ईगल आई से पूछें'], timeline: ['Case history', 'मामले का इतिहास'], changes: ['What changed?', 'क्या बदला?'],
+  drafts: ['Drafts', 'मसौदे'], help: ['Lawyer brief', 'वकील के लिए विवरण'], upload: ['Upload a document', 'दस्तावेज़ अपलोड करें'],
+  scan: ['Scan a document', 'दस्तावेज़ स्कैन करें'], send: ['Send', 'भेजें'], sending: ['Working…', 'काम जारी है…'],
+  save: ['Save changes', 'बदलाव सहेजें'], cancel: ['Cancel', 'रद्द करें'], close: ['Close', 'बंद करें'],
+  role: ['Your role', 'आपकी भूमिका'], location: ['Work / event location', 'काम / घटना का स्थान'],
+  status: ['Document status', 'दस्तावेज़ की स्थिति'], goal: ['What do you want to achieve?', 'आप क्या पाना चाहते हैं?'],
+  confirm: ['Confirm these details', 'इन जानकारियों की पुष्टि करें'], unknown: ['Unknown / skip', 'पता नहीं / छोड़ें'],
+  favourable: ['In your favour', 'आपके पक्ष में'], risks: ['Needs your attention', 'आपका ध्यान ज़रूरी है'],
+  unclear: ['Unclear or not found', 'अस्पष्ट या उपलब्ध नहीं'], nextSteps: ['Your next steps', 'आपके अगले कदम'],
+  listen: ['Listen', 'सुनें'], stop: ['Stop', 'रोकें'], translate: ['Translate', 'अनुवाद करें'],
+  review: ['Review document', 'दस्तावेज़ की समीक्षा'], extract: ['Find important details', 'महत्वपूर्ण जानकारी निकालें'],
+  source: ['View source', 'स्रोत देखें'], facts: ['Confirmed details', 'पुष्ट जानकारी'], evidence: ['Evidence', 'सबूत'],
+  ready: ['Ready', 'तैयार'], delete: ['Delete case', 'मामला हटाएँ'], export: ['Export case', 'मामला डाउनलोड करें'],
+  privacy: ['Privacy & coverage', 'गोपनीयता और दायरा'], record: ['Record a question', 'सवाल रिकॉर्ड करें'],
+  textPlaceholder: ['Tell me what happened, or ask about a document…', 'बताएँ क्या हुआ, या दस्तावेज़ के बारे में पूछें…'],
+  noFindings: ['None identified in the readable supplied text.', 'पढ़ने योग्य दिए गए पाठ में कोई बात नहीं मिली।'],
+  print: ['Print / save PDF', 'प्रिंट / PDF सहेजें'], download: ['Download', 'डाउनलोड'],
+  generate: ['Create a draft', 'मसौदा बनाएँ'], signIn: ['Sign in', 'साइन इन'], signOut: ['End session', 'सत्र बंद करें'],
+  partial: ['Partial review', 'आंशिक समीक्षा'], original: ['Original page', 'मूल पृष्ठ'], extracted: ['Extracted text', 'निकाला गया पाठ'],
+  completeness: ['All pages and referenced annexures are included', 'सभी पृष्ठ और संदर्भित परिशिष्ट शामिल हैं'],
+  fictional: ['FICTIONAL SAMPLE · Example outputs, no live AI calls', 'काल्पनिक उदाहरण · उदाहरण उत्तर, कोई लाइव AI कॉल नहीं'],
+  local: ['Local development · stored on this computer', 'स्थानीय विकास · इस कंप्यूटर पर सहेजा गया'],
+  stale: ['Based on an earlier case revision. Review again after your changes.', 'पुराने मामले के संस्करण पर आधारित। बदलाव के बाद दोबारा समीक्षा करें।'],
+  draftNote: ['Review and edit before use. Nothing is sent automatically.', 'इस्तेमाल से पहले जाँचें और बदलें। कुछ भी अपने आप नहीं भेजा जाता।'],
+  processingNote: ['Documents and recordings are sent to Sarvam for processing. This is a case-preparation tool, not a lawyer.', 'दस्तावेज़ और रिकॉर्डिंग प्रोसेसिंग के लिए Sarvam को भेजे जाते हैं। यह मामले की तैयारी का साधन है, वकील नहीं।'],
+} as const;
+export type Label = keyof typeof labels;
+export const tr = (lang: Language, key: Label) => labels[key][lang === 'hi-IN' ? 1 : 0];

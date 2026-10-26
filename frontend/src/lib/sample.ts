@@ -1,0 +1,40 @@
+import type { CaseRecord, DocumentRecord, Fact, Finding } from './types';
+const date = '2026-10-26T10:00:00Z';
+const fact = (key: string, label: string, value: string): Fact => ({key, label, value, status: 'user_confirmed', source_id: null, quote: ''});
+const document = (version: number): DocumentRecord => ({
+  id: `sample-document-${version}`, filename: version === 1 ? 'Employment agreement.pdf' : 'Amended employment agreement.pdf',
+  request_id: `sample-${version}`, version, previous_id: version === 2 ? 'sample-document-1' : null,
+  status: 'ready', complete: true, partial: false, error: null, created_at: date,
+  originals: [{id: `sample-original-${version}`, filename: `agreement-v${version}.pdf`, mime: 'application/pdf', page_count: 2, issues: []}],
+  pages: [{id: `sample-page-${version}-1`, number: 1, original_id: `sample-original-${version}`, original_page: 1, rotation: 0, issues: [], corrections: [],
+    machine_text: 'FICTIONAL DEMO — NOT A REAL CASE\nEmployment agreement: Aarav and Example Studio\n1. Monthly salary: INR 32,000, payable by the seventh day of the following month.\n2. The employee will receive an itemised payslip each month.\n3. The place of work is Lucknow, Uttar Pradesh.',
+    confirmed_text: 'FICTIONAL DEMO — NOT A REAL CASE\nEmployment agreement: Aarav and Example Studio\n1. Monthly salary: INR 32,000, payable by the seventh day of the following month.\n2. The employee will receive an itemised payslip each month.\n3. The place of work is Lucknow, Uttar Pradesh.'},
+    {id: `sample-page-${version}-2`, number: 2, original_id: `sample-original-${version}`, original_page: 2, rotation: 0, issues: [], corrections: [],
+    machine_text: version === 1 ? '7. The employee must give 60 days of notice before leaving.\n8. The employer may deduct training costs from the final payment.\n9. Any change must be recorded in writing and agreed by both parties.' : '7. The employee must give 30 days of notice before leaving.\n8. Any training-cost deduction requires a separate written agreement specifying the amount.\n9. Any change must be recorded in writing and agreed by both parties.',
+    confirmed_text: version === 1 ? '7. The employee must give 60 days of notice before leaving.\n8. The employer may deduct training costs from the final payment.\n9. Any change must be recorded in writing and agreed by both parties.' : '7. The employee must give 30 days of notice before leaving.\n8. Any training-cost deduction requires a separate written agreement specifying the amount.\n9. Any change must be recorded in writing and agreed by both parties.'}],
+});
+const finding = (title: string, explanation: string, quote: string, page: number, attention: 'high' | 'medium' | 'low', action: string): Finding => ({title, explanation, attention, reason: 'This wording affects the employee’s payment or exit arrangements.', action, citations: [{source_id: `sample-page-1-${page}`, document_id: 'sample-document-1', page, version: 1, filename: 'Employment agreement.pdf', quote}]});
+export const sampleCase: CaseRecord = {
+  id: 'sample', title: 'Understanding my employment agreement', domain: 'employment_payment', language: 'en-IN', revision: 3,
+  created_at: date, updated_at: date, coverage: 'Fictional sample. Document explanation and factual preparation only; no professionally reviewed legal conclusions.',
+  facts: [fact('role', 'Your role', 'Employee'), fact('location', 'Work / event location', 'Lucknow, Uttar Pradesh'), fact('document_status', 'Document status', 'Unsigned draft'), fact('goal', 'Your goal', 'Understand payment and exit terms before responding')],
+  documents: [document(1), document(2)],
+  messages: [{id: 'sample-user', role: 'user', text: 'What should I clarify about the training-cost deduction?', at: date},
+    {id: 'sample-answer', role: 'assistant', text: 'Clause 8 allows a training-cost deduction but does not state an amount or calculation method. Ask which training it covers, how the cost is calculated, and whether you can agree a written limit. The wording alone does not establish whether a deduction would be enforceable.', at: date,
+      questions: ['Have you received a separate training agreement?'], gaps: ['Enforceability needs professional review.'], citations: [{source_id: 'sample-page-1-2', document_id: 'sample-document-1', page: 2, version: 1, quote: 'The employer may deduct training costs from the final payment.'}]}],
+  assessments: [{id: 'sample-assessment', document_id: 'sample-document-1', revision: 3, created_at: date, output_id: 'sample-output',
+    summary: 'Your agreement sets a monthly salary of ₹32,000 and a payment date. Before responding, clarify the training-cost deduction and make sure the notice period works for you. This review uses the employee’s perspective.',
+    favourable: [finding('A clear salary and payment date', 'The agreement states both the monthly amount and when it should be paid. Keep the agreed terms and payslips with your records.', 'Monthly salary: INR 32,000, payable by the seventh day of the following month.', 1, 'low', 'Keep the signed agreement and compare it with your payslips.')],
+    risks: [finding('Training costs have no stated limit', 'The supplied clause allows a deduction without giving a figure or calculation method. This leaves the possible final-payment reduction unclear.', 'The employer may deduct training costs from the final payment.', 2, 'high', 'Ask for the covered costs, calculation and an agreed written cap.')],
+    unclear: [finding('What happens during the notice period?', 'Clause 7 specifies 60 days of notice. The supplied wording does not explain an early-release arrangement.', 'The employee must give 60 days of notice before leaving.', 2, 'medium', 'Ask how an early release would be agreed and documented.')],
+    next_steps: ['Request a written explanation of training costs.', 'Compare the amended wording with the original.', 'Keep a copy of the version both parties agree.'], gaps: ['This synthetic example has not been professionally reviewed.']}],
+  proposals: [], revisions: [{revision: 1, at: date, reason: 'Employee perspective and goal confirmed', facts: [], ledger: null}, {revision: 2, at: date, reason: 'Amended agreement added; original retained', facts: [], ledger: null}],
+  comparisons: [{id: 'sample-comparison', before_id: 'sample-document-1', after_id: 'sample-document-2', created_at: date,
+    changes: [{kind: 'replace', before: 'The employee must give 60 days of notice before leaving.', after: 'The employee must give 30 days of notice before leaving.'}, {kind: 'replace', before: 'The employer may deduct training costs from the final payment.', after: 'Any training-cost deduction requires a separate written agreement specifying the amount.'}],
+    limitation: 'The revised text changes the stated terms. Whether it replaces an earlier agreement needs confirmation.'}],
+  drafts: [{id: 'sample-draft', kind: 'clarification', revision: 3, version: 1, language: 'en-IN', history: [], placeholders: ['Recipient', 'Your name'],
+    text: 'Dear [Recipient],\n\nThank you for sharing the agreement. Before I respond, could you clarify which training costs clause 8 covers, how they would be calculated, and whether we can record an agreed limit in writing?\n\nPlease also confirm which version of the notice-period clause we are discussing.\n\nKind regards,\n[Your name]'}],
+  outputs: [], ledger: {monthly_pay_paise: 3200000, periods: 2, basis: 'net', period_labels: 'August and September 2026 (fictional)', comparable_confirmed: true,
+    entries: [{id: 'sample-payment', kind: 'payment', amount_paise: 1200000, reference: 'DEMO-TRANSFER-001', date: '2026-10-10', attributed: true, confirmed: true}, {id: 'sample-offer', kind: 'offer', amount_paise: 4000000, reference: 'DEMO-OFFER-001', date: '2026-10-12', attributed: false, confirmed: true}]},
+  reconciliation: {available: true, stated_total_paise: 6400000, payments_paise: 1200000, balance_paise: 5200000, offers_paise: [4000000], difference_paise: 1200000, warnings: [], reason: 'Conditional sample arithmetic. An offer is not a payment or a ruling on entitlement.'},
+};
